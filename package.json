@@ -1,0 +1,55 @@
+{
+  "name": "downtimer",
+  "version": "0.1.0",
+  "description": "Timeouts, but a little more relaxing",
+  "keywords": [
+    "downtime",
+    "downtimer",
+    "setTimeout",
+    "deferred execution",
+    "timeout",
+    "timer"
+  ],
+  "homepage": "https://github.com/MaddyGuthridge/downtimer#readme",
+  "bugs": {
+    "url": "https://github.com/MaddyGuthridge/downtimer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaddyGuthridge/downtimer.git"
+  },
+  "license": "MIT",
+  "author": "Maddy Guthridge",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "scripts": {
+    "test": "vitest run",
+    "tc": "vitest run --coverage",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
+    "preattw": "npm run build",
+    "attw": "attw --pack .",
+    "tsc": "tsc --noEmit",
+    "build": "rm -rf dist && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.25.1",
+    "@types/node": "^22.15.3",
+    "@vitest/coverage-v8": "^3.1.2",
+    "eslint": "^9.25.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0",
+    "vitest": "^3.1.2"
+  },
+  "dependencies": {
+  }
+}
