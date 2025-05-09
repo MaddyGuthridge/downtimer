@@ -1,14 +1,17 @@
+import pino, { Logger } from 'pino';
 import { DowntimerOptions, TimerCallback, TimerId } from './types';
 import { nanoid } from 'nanoid/non-secure';
 
 /** Internal timer info type */
-type TimerInfo = {
+export type TimerInfo = {
   /** The callback to call when the timer fires */
   callback: () => void,
   /** The UNIX timestamp (in ms) when the timer was scheduled */
   scheduledAt: number,
   /** The UNIX timestamp (in ms) for when the timer should fire */
   scheduledFor: number,
+  /** User-facing timer ID */
+  externalId: TimerId,
   /** Internal timer ID */
   internalId: ReturnType<typeof setTimeout>,
   /** Whether this timer has been run */
@@ -26,11 +29,21 @@ export class Downtimer {
   #options: DowntimerOptions;
   /** Internal mapping of timers */
   #timers: Record<TimerId, TimerInfo>;
+  /** Pino logger */
+  #log: Logger;
 
   /** Create a new instance of the Downtimer manager. */
   constructor(options: Partial<DowntimerOptions> = {}) {
     this.#options = { ...defaultOptions, ...options };
     this.#timers = {};
+    this.#log = pino({
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      },
+    });
 
     if (this.#options.clearAllOnExit) {
       process.on('exit', code => this.clearAll(`process exiting with code ${code}`));
@@ -47,13 +60,12 @@ export class Downtimer {
       return;
     }
 
-    console.log('Executing callback');
+    this.#log.debug(`Executing callback for timer with ID '${timerId}'`);
     timer.executed = true;
     try {
       timer.callback();
     } catch (e) {
-      console.error(`Error in timer with ID '${timerId}'`);
-      console.error(e);
+      this.#log.error(e, `Error in timer with ID '${timerId}'`);
     }
   }
 
@@ -67,20 +79,21 @@ export class Downtimer {
    * @returns a timer ID which can be used to cancel the timer.
    */
   schedule(callback: TimerCallback, ms: number): TimerId {
-    const publicId = nanoid() satisfies TimerId;
-    const internalId = setTimeout(() => this.#onTimer(publicId), ms);
+    const externalId = nanoid() satisfies TimerId;
+    const internalId = setTimeout(() => this.#onTimer(externalId), ms);
 
     const options: TimerInfo = {
       callback,
       scheduledAt: Date.now(),
       scheduledFor: Date.now() + ms,
+      externalId,
       internalId,
       executed: false,
     };
 
-    this.#timers[publicId] = options;
+    this.#timers[externalId] = options;
 
-    return publicId;
+    return externalId;
   }
 
   /**
@@ -94,30 +107,30 @@ export class Downtimer {
     const timer = this.#timers[timerId];
 
     if (!timer) {
-      console.log(this.#timers);
-      console.log('Timer not found');
+      this.#log.warn(`Timer with ID '${timerId}' not found`);
       return;
     }
     if (timer.executed) {
-      console.log(this.#timers);
-      console.log('Timer has already fired');
+      this.#log.info(`Cannot clear timer with ID '${timerId}' because it has already fired`);
+      return;
     }
 
-    console.log('Timer cleared');
+    this.#log.debug(`Timer with ID '${timerId}' cleared`);
     clearTimeout(timer.internalId);
+    delete this.#timers[timerId];
   }
 
   /**
    * Cancel all outstanding callback functions.
    */
   clearAll(reason = '') {
-    const reasonLog = reason ? ` due to ${reason}` : '';
-    for (const [timerId, timer] of Object.entries(this.#timers)) {
+    this.#log.info(`Clear all timers. Reason: '${reason}'`);
+    for (const [_timerId, timer] of Object.entries(this.#timers)) {
       if (!timer.executed) {
-        console.log(`Cancel timer with ID '${timerId}'${reasonLog}`);
         clearTimeout(timer.internalId);
       }
     }
+    this.#timers = {};
   }
 }
 
