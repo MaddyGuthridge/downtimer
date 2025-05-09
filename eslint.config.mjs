@@ -25,6 +25,8 @@ export default ts.config(
       }],
       // Disallow floating promises to avoid random crashes
       '@typescript-eslint/no-floating-promises': 'error',
+      // Require semicolons
+      semi: "error",
       // Single quotes where possible
       quotes: ['error', 'single', { 'avoidEscape': true, 'allowTemplateLiterals': false }],
       // Allow some `any` expressions since otherwise they seriously mess with tests, or enforce

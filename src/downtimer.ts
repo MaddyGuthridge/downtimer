@@ -1,7 +1,8 @@
 import { TimerCallback, TimerId } from './types';
 import { nanoid } from 'nanoid/non-secure';
 
-type TimerOptions = {
+/** Internal timer info type */
+type TimerInfo = {
   /** The callback to call when the timer fires */
   callback: () => void,
   /** The UNIX timestamp (in ms) when the timer was scheduled */
@@ -13,7 +14,7 @@ type TimerOptions = {
 }
 
 export class Downtimer {
-  #timers: Record<TimerId, TimerOptions | undefined>;
+  #timers: Record<TimerId, TimerInfo | undefined>;
 
   constructor() {
     this.#timers = {};
@@ -41,7 +42,7 @@ export class Downtimer {
     const publicId = nanoid() satisfies TimerId;
     const internalId = setTimeout(() => this.#onTimer(publicId), ms);
 
-    const options: TimerOptions = {
+    const options: TimerInfo = {
       callback,
       scheduledAt: Date.now(),
       scheduledFor: Date.now() + ms,
@@ -69,7 +70,7 @@ export class Downtimer {
   clearAll() {
     for (const [timerId, timer] of Object.entries(this.#timers)) {
       if (timer) {
-        console.log(`Cancel timer with ID '${timerId}'`)
+        console.log(`Cancel timer with ID '${timerId}'`);
         clearTimeout(timer.internalId);
       }
     }
