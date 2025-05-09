@@ -18,7 +18,7 @@ export type TimerCallback = () => void;
  */
 export type DowntimerOptions = {
   /**
-   * Whether to clear all running timers if a process using Downtimer begins to exit.
+   * Whether to clear all running timers if a process using downtimer begins to exit.
    *
    * Defaults to `true` so that timers won't prevent the process from exiting.
    */
