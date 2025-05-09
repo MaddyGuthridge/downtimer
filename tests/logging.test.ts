@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import downtimer from '../src';
 import { sleep } from './util';
 import pino from 'pino';
+import { TimerId } from '../src/types';
 
 function logItemEquals(actual: any, expected: any, msg: any) {
   expect(actual, msg).toMatchObject(expected);
@@ -19,6 +20,18 @@ describe('Logging test', () => {
     await pinoTest.once(
       stream,
       { level: pino.levels.values.error, err: expect.objectContaining({ message: 'Uh oh!'}) },
+      logItemEquals,
+    );
+  });
+
+  test.concurrent('Logs warning when cancelling a non-existent timer', async () => {
+    const stream = pinoTest.sink();
+    const dt = downtimer({ pinoOptions: {}, pinoDestination: stream });
+    dt.clear('invalid' as TimerId);
+
+    await pinoTest.once(
+      stream,
+      { level: pino.levels.values.warn },
       logItemEquals,
     );
   });
