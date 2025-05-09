@@ -3,7 +3,7 @@ import { downtimer } from '../src';
 import { sleep } from './util';
 
 describe('Scheduler', () => {
-  it('Schedules timers', async () => {
+  it.concurrent('Schedules timers', async () => {
     const dt = downtimer();
     const callback = vi.fn();
     dt.schedule(callback, 10);
@@ -11,7 +11,7 @@ describe('Scheduler', () => {
     expect(callback).toBeCalledTimes(1);
   });
 
-  test("Callbacks aren't called until their scheduled time", async () => {
+  test.concurrent("Callbacks aren't called until their scheduled time", async () => {
     const dt = downtimer();
     const callback = vi.fn();
     dt.schedule(callback, 10);
@@ -19,7 +19,7 @@ describe('Scheduler', () => {
     expect(callback).not.toBeCalled();
   });
 
-  it('Allows timers to be cleared', async () => {
+  it.concurrent('Allows timers to be cleared', async () => {
     const dt = downtimer();
     const callback = vi.fn();
     const timer = dt.schedule(callback, 10);
@@ -34,7 +34,7 @@ describe('Scheduler', () => {
     expect(callback).not.toBeCalled();
   });
 
-  it('Allows all timers to be cleared', async () => {
+  it.concurrent('Allows all timers to be cleared', async () => {
     const dt = downtimer();
     const callbacks = [vi.fn(), vi.fn(), vi.fn()];
 
@@ -49,21 +49,21 @@ describe('Scheduler', () => {
     });
   });
 
-  test('Clearing an already-fired timer is a no-op', async () => {
+  test.concurrent('Clearing an already-fired timer is a no-op', async () => {
     const dt = downtimer();
     const timer = dt.schedule(() => {}, 5);
     await sleep(10);
     dt.clear(timer);
   });
 
-  test("Clearing a timer doesn't clear other timers", async () => {
+  test.concurrent("Clearing a timer doesn't clear other timers", async () => {
     const dt = downtimer();
     // First timer gets cancelled
     const timer1 = dt.schedule(() => {}, 5);
     // Second timer not cancelled
     const callback = vi.fn();
     dt.schedule(callback, 5);
-    
+
     dt.clear(timer1);
     await sleep(10);
     expect(callback).toBeCalled();
