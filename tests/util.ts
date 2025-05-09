@@ -5,9 +5,5 @@ export async function sleep(ms: number) {
 }
 
 export async function runTestProgram(program: string) {
-  const { exitCode, stdout } = await execa`npm run tsx tests/testPrograms/${program}`;
-  return {
-    exitCode,
-    stdout,
-  };
+  return execa`npm run --silent tsx tests/testPrograms/${program}`;
 }

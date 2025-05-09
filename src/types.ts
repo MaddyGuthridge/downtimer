@@ -1,4 +1,4 @@
-import { LoggerOptions } from 'pino';
+import { DestinationStream, LoggerOptions } from 'pino';
 
 /**
  * A unique ID representing a timer.
@@ -24,8 +24,12 @@ export type DowntimerOptions = {
    * Defaults to `true` so that timers won't prevent the process from exiting.
    */
   clearAllOnExit: boolean
+  /** Minimum log level to display */
+  logLevel: 'debug' | 'info' | 'warn' | 'error'
   /**
    * Logging options, passed to the logger `pino`.
    */
   pinoOptions: LoggerOptions,
+  /** Destination for log output */
+  pinoDestination: DestinationStream | undefined,
 };

@@ -21,6 +21,7 @@ export type TimerInfo = {
 /** Default options for Downtimer */
 const defaultOptions: DowntimerOptions = {
   clearAllOnExit: true,
+  logLevel: 'warn',
   pinoOptions: {
     transport: {
       target: 'pino-pretty',
@@ -29,6 +30,7 @@ const defaultOptions: DowntimerOptions = {
       },
     },
   },
+  pinoDestination: undefined,
 };
 
 /** The Downtimer class, which acts as a timer manager */
@@ -44,10 +46,11 @@ export class Downtimer {
   constructor(options: Partial<DowntimerOptions> = {}) {
     this.#options = { ...defaultOptions, ...options };
     this.#timers = {};
-    this.#log = pino();
+    this.#options.pinoOptions.level = this.#options.logLevel;
+    this.#log = pino(this.#options.pinoOptions, this.#options.pinoDestination);
 
     if (this.#options.clearAllOnExit) {
-      process.on('exit', code => this.clearAll(`process exiting with code ${code}`));
+      process.on('exit', code => this.#onExit(code));
     }
   }
 
@@ -124,14 +127,22 @@ export class Downtimer {
   /**
    * Cancel all outstanding callback functions.
    */
-  clearAll(reason = '') {
-    this.#log.info(`Clear all timers. Reason: '${reason}'`);
+  clearAll() {
+    this.#log.info('Clear all timers');
     for (const [_timerId, timer] of Object.entries(this.#timers)) {
       if (!timer.executed) {
         clearTimeout(timer.internalId);
       }
     }
     this.#timers = {};
+  }
+
+  #onExit(code: number) {
+    if (Object.keys(this.#timers).length) {
+      // FIXME: displaying this using the logger causes error to be displayed
+      console.warn(`Clearing all outstanding timers due to program exiting with code ${code}`);
+      this.clearAll();
+    }
   }
 }
 

@@ -92,7 +92,7 @@ export default ts.config(
       '**/svelte.config.js',
       '**/vitest.config.ts',
       'eslint.config.mjs',
-      'vite.config.ts',
+      'vite.config.mts',
     ],
   },
 );
