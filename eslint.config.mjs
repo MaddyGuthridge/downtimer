@@ -1,7 +1,6 @@
 // @ts-check
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
-import globals from 'globals';
 
 export default ts.config(
   js.configs.recommended,
@@ -21,12 +20,13 @@ export default ts.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
+        destructuredArrayIgnorePattern: '^_',
         caughtErrors: 'none',
       }],
       // Disallow floating promises to avoid random crashes
       '@typescript-eslint/no-floating-promises': 'error',
       // Require semicolons
-      semi: "error",
+      semi: 'error',
       // Single quotes where possible
       quotes: ['error', 'single', { 'avoidEscape': true, 'allowTemplateLiterals': false }],
       // Allow some `any` expressions since otherwise they seriously mess with tests, or enforce
@@ -43,37 +43,37 @@ export default ts.config(
       // Allow empty functions, as they are useful to silence promise errors
       '@typescript-eslint/no-empty-function': 'off',
       // Use `type` instead of `interface`
-      "@typescript-eslint/consistent-type-definitions": ["error", 'type'],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       // This error is already picked up by TypeScript, and it's annoying to need to silence it
       // twice when it is incorrect
-      "@typescript-eslint/no-unsafe-call": "off",
+      '@typescript-eslint/no-unsafe-call': 'off',
       // Prevent node standard library imports without `node:` prefix
-      "no-restricted-imports": ["error", {
+      'no-restricted-imports': ['error', {
         paths: [
-          { name: "os", message: "Import from `node:os`" },
-          { name: "path", message: "Import from `node:path`" },
-          { name: "fs", message: "Import from `node:fs`" },
-          { name: "fs/promises", message: "Import from `node:fs/promises`" },
+          { name: 'os', message: 'Import from `node:os`' },
+          { name: 'path', message: 'Import from `node:path`' },
+          { name: 'fs', message: 'Import from `node:fs`' },
+          { name: 'fs/promises', message: 'Import from `node:fs/promises`' },
         ]
       }],
       // Use `Promise.all` instead of `await` in a for loop for better async performance
-      "no-await-in-loop": "error",
+      'no-await-in-loop': 'error',
       // Don't allow duplicate imports, because they are yucky
-      "no-duplicate-imports": "error",
+      'no-duplicate-imports': 'error',
       // Accidentally forgetting to use `back-ticks` for template literals
-      "no-template-curly-in-string": "error",
+      'no-template-curly-in-string': 'error',
       // Use === instead of ==
-      "eqeqeq": "error",
+      'eqeqeq': 'error',
       // Use dot notation for object property access
-      "dot-notation": "error",
+      'dot-notation': 'error',
       // Don't use `alert` and similar functions
-      "no-alert": "error",
+      'no-alert': 'error',
       // Use camelCase for naming
-      "camelcase": "error",
+      'camelcase': 'error',
       // Use `const` over `let` where reasonable
       // Not required for destructuring, since that just makes things painful for Svelte props where
       // some props are bindable
-      "prefer-const": ["error", { destructuring: "all" }],
+      'prefer-const': ['error', { destructuring: 'all' }],
     },
   },
   {
