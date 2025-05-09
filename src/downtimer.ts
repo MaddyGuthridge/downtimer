@@ -21,6 +21,14 @@ export type TimerInfo = {
 /** Default options for Downtimer */
 const defaultOptions: DowntimerOptions = {
   clearAllOnExit: true,
+  pinoOptions: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+      },
+    },
+  },
 };
 
 /** The Downtimer class, which acts as a timer manager */
@@ -36,14 +44,7 @@ export class Downtimer {
   constructor(options: Partial<DowntimerOptions> = {}) {
     this.#options = { ...defaultOptions, ...options };
     this.#timers = {};
-    this.#log = pino({
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-        },
-      },
-    });
+    this.#log = pino();
 
     if (this.#options.clearAllOnExit) {
       process.on('exit', code => this.clearAll(`process exiting with code ${code}`));
