@@ -1,3 +1,4 @@
+import { LoggerOptions } from 'pino';
 
 /**
  * A unique ID representing a timer.
@@ -23,4 +24,8 @@ export type DowntimerOptions = {
    * Defaults to `true` so that timers won't prevent the process from exiting.
    */
   clearAllOnExit: boolean
+  /**
+   * Logging options, passed to the logger `pino`.
+   */
+  pinoOptions: LoggerOptions,
 };
