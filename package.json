@@ -27,8 +27,10 @@
   "module": "dist/esm/index.js",
   "scripts": {
     "test": "vitest run",
-    "tc": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src tests",
+    "lint:watch": "watch -c -n 1 npm run lint",
     "lint:fix": "eslint --fix src tests",
     "preattw": "npm run build",
     "attw": "attw --pack .",
