@@ -1,6 +1,8 @@
-import pino, { Logger } from 'pino';
-import { DowntimerOptions, TimerCallback, TimerId } from './types';
+import { DeepPartial, TimerCallback, TimerId } from './types';
+import { defaultOptions, DowntimerOptions, mergeDeepPartial } from './options';
 import { nanoid } from 'nanoid/non-secure';
+import { logBeforeExecute, logClearAll, logClearNotFound, logClearOnExit, logClearSuccess, logErrorInExecute, logSchedule } from './log';
+import { getTrace } from './stackTrace';
 
 /** Internal timer info type */
 export type TimerInfo = {
@@ -14,24 +16,9 @@ export type TimerInfo = {
   externalId: TimerId,
   /** Internal timer ID */
   internalId: ReturnType<typeof setTimeout>,
-  /** Whether this timer has been run */
-  executed: boolean,
+  /** The trace */
+  scheduleStackTrace: string,
 }
-
-/** Default options for Downtimer */
-const defaultOptions: DowntimerOptions = {
-  clearAllOnExit: true,
-  logLevel: 'warn',
-  pinoOptions: {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-      },
-    },
-  },
-  pinoDestination: undefined,
-};
 
 /** The Downtimer class, which acts as a timer manager */
 export class Downtimer {
@@ -39,19 +26,13 @@ export class Downtimer {
   #options: DowntimerOptions;
   /** Internal mapping of timers */
   #timers: Record<TimerId, TimerInfo>;
-  /** Pino logger */
-  #log: Logger;
 
   /** Create a new instance of the Downtimer manager. */
-  constructor(options: Partial<DowntimerOptions> = {}) {
-    this.#options = { ...defaultOptions, ...options };
+  constructor(options: DeepPartial<DowntimerOptions> = {}) {
+    this.#options = mergeDeepPartial(defaultOptions, options);
     this.#timers = {};
-    this.#options.pinoOptions.level = this.#options.logLevel;
-    this.#log = pino(this.#options.pinoOptions, this.#options.pinoDestination);
 
-    if (this.#options.clearAllOnExit) {
-      process.on('exit', code => this.#onExit(code));
-    }
+    process.on('exit', code => this.#onExit(code));
   }
 
   /**
@@ -64,12 +45,17 @@ export class Downtimer {
       return;
     }
 
-    this.#log.debug(`Executing callback for timer with ID '${timerId}'`);
-    timer.executed = true;
+    logBeforeExecute(this.#options.logConfig.execute.before, timer);
+
+    delete this.#timers[timerId];
     try {
       timer.callback();
-    } catch (e) {
-      this.#log.error(e, `Error in timer with ID '${timerId}'`);
+    } catch (e: unknown) {
+      logErrorInExecute(
+        this.#options.logConfig.execute.onError,
+        timer,
+        e,
+      );
     }
   }
 
@@ -85,6 +71,7 @@ export class Downtimer {
   schedule(callback: TimerCallback, ms: number): TimerId {
     const externalId = nanoid() satisfies TimerId;
     const internalId = setTimeout(() => this.#onTimer(externalId), ms);
+    const scheduleStackTrace = getTrace();
 
     const options: TimerInfo = {
       callback,
@@ -92,10 +79,12 @@ export class Downtimer {
       scheduledFor: Date.now() + ms,
       externalId,
       internalId,
-      executed: false,
+      scheduleStackTrace,
     };
 
     this.#timers[externalId] = options;
+
+    logSchedule(this.#options.logConfig.schedule, options);
 
     return externalId;
   }
@@ -111,15 +100,11 @@ export class Downtimer {
     const timer = this.#timers[timerId];
 
     if (!timer) {
-      this.#log.warn(`Timer with ID '${timerId}' not found`);
-      return;
-    }
-    if (timer.executed) {
-      this.#log.info(`Cannot clear timer with ID '${timerId}' because it has already fired`);
+      logClearNotFound(this.#options.logConfig.clear.notFound, timerId);
       return;
     }
 
-    this.#log.debug(`Timer with ID '${timerId}' cleared`);
+    logClearSuccess(this.#options.logConfig.clear.success, timer);
     clearTimeout(timer.internalId);
     delete this.#timers[timerId];
   }
@@ -128,25 +113,22 @@ export class Downtimer {
    * Cancel all outstanding callback functions.
    */
   clearAll() {
-    this.#log.info('Clear all timers');
+    logClearAll(this.#options.logConfig.clear.allOutstanding, this.#timers);
     for (const [_timerId, timer] of Object.entries(this.#timers)) {
-      if (!timer.executed) {
-        clearTimeout(timer.internalId);
-      }
+      clearTimeout(timer.internalId);
     }
     this.#timers = {};
   }
 
   #onExit(code: number) {
     if (Object.keys(this.#timers).length) {
-      // FIXME: displaying this using the logger causes error to be displayed
-      console.warn(`Clearing all outstanding timers due to program exiting with code ${code}`);
+      logClearOnExit(this.#options.logConfig.exitWithOutstandingTimers, this.#timers, code);
       this.clearAll();
     }
   }
 }
 
 /** Create a new instance of the Downtimer manager. */
-export function downtimer(options: Partial<DowntimerOptions> = {}) {
+export function downtimer(options: DeepPartial<DowntimerOptions> = {}) {
   return new Downtimer(options);
 }

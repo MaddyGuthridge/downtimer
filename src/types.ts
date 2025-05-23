@@ -1,4 +1,7 @@
-import { DestinationStream, LoggerOptions } from 'pino';
+// https://stackoverflow.com/a/61132308/6335363
+export type DeepPartial<T> = T extends object ? {
+  [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
 
 /**
  * A unique ID representing a timer.
@@ -13,23 +16,3 @@ export type TimerId = string & { __timerId: '__timerId' };
  * A callback function, executed once a timer fires.
  */
 export type TimerCallback = () => void;
-
-/**
- * Configuration options for downtimer object.
- */
-export type DowntimerOptions = {
-  /**
-   * Whether to clear all running timers if a process using downtimer begins to exit.
-   *
-   * Defaults to `true` so that timers won't prevent the process from exiting.
-   */
-  clearAllOnExit: boolean
-  /** Minimum log level to display */
-  logLevel: 'debug' | 'info' | 'warn' | 'error'
-  /**
-   * Logging options, passed to the logger `pino`.
-   */
-  pinoOptions: LoggerOptions,
-  /** Destination for log output */
-  pinoDestination: DestinationStream | undefined,
-};

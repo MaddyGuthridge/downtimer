@@ -34,6 +34,8 @@ export default ts.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      // Allow short-circuit expressions
+      '@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true }],
       // Also disable template expression checks, since they're also error handling stuff
       // TODO: Enable them at some point when I get around to actually tidying things up
       '@typescript-eslint/no-base-to-string': 'off',

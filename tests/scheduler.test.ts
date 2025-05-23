@@ -1,10 +1,10 @@
 import { describe, expect, it, test, vi } from 'vitest';
 import { downtimer } from '../src';
-import { sleep } from './util';
+import { optionsNoLogging, sleep } from './util';
 
 describe('Scheduler', () => {
   it.concurrent('Schedules timers', async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     const callback = vi.fn();
     dt.schedule(callback, 10);
     await sleep(15);
@@ -12,7 +12,7 @@ describe('Scheduler', () => {
   });
 
   test.concurrent("Callbacks aren't called until their scheduled time", async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     const callback = vi.fn();
     dt.schedule(callback, 10);
     await sleep(5);
@@ -20,7 +20,7 @@ describe('Scheduler', () => {
   });
 
   it.concurrent('Allows timers to be cleared', async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     const callback = vi.fn();
     const timer = dt.schedule(callback, 10);
     await sleep(5);
@@ -35,7 +35,7 @@ describe('Scheduler', () => {
   });
 
   it.concurrent('Allows all timers to be cleared', async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     const callbacks = [vi.fn(), vi.fn(), vi.fn()];
 
     callbacks.forEach(cb => dt.schedule(cb, 5));
@@ -50,14 +50,14 @@ describe('Scheduler', () => {
   });
 
   test.concurrent('Clearing an already-fired timer is a no-op', async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     const timer = dt.schedule(() => {}, 5);
     await sleep(10);
     dt.clear(timer);
   });
 
   test.concurrent("Clearing a timer doesn't clear other timers", async () => {
-    const dt = downtimer();
+    const dt = downtimer(optionsNoLogging);
     // First timer gets cancelled
     const timer1 = dt.schedule(() => {}, 5);
     // Second timer not cancelled
