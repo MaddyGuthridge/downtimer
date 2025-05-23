@@ -1,4 +1,4 @@
-import downtimer from '../../src';
+import { downtimer } from '../../src';
 
 const dt = downtimer({ logConfig: { exitWithOutstandingTimers: 'off' } });
 
