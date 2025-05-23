@@ -1,6 +1,6 @@
 import downtimer from '../../src';
 
-const dt = downtimer({ clearAllOnExit: false });
+const dt = downtimer({ logConfig: { exitWithOutstandingTimers: 'off' } });
 
 dt.schedule(() => console.log('Uhhhh'), 1000);
 

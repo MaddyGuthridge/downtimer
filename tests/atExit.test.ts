@@ -3,10 +3,10 @@ import { runTestProgram } from './util';
 
 describe('At exit behaviour', () => {
   test.concurrent('Test program: earlyExit', async () => {
-    const { exitCode, stderr } = await runTestProgram('earlyExit.ts');
+    const { exitCode, stdout } = await runTestProgram('earlyExit.ts');
     expect(exitCode).toBe(0);
     expect(
-      stderr.includes('Clearing all outstanding timers due to program exiting with code 0')
+      stdout.includes('Clearing 1 timer due to exit with code 0')
     ).toBeTruthy();
   });
 
