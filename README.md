@@ -11,6 +11,8 @@ features:
   as callback functions.
 * Warnings are logged for pending timers when the application exits.
 * Provides a simple interface for clearing all registered timers.
+* Timer IDs can be passed through `JSON.stringify` (since they're just
+  strings).
 
 ## Installation
 
