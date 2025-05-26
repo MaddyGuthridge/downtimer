@@ -6,12 +6,19 @@ export type StackFrame = {
   pos: [number, number] | null
 }
 
-const SOURCE_ROW_REGEX = /:\d+:\d+\)$/;
-const SOURCE_COL_REGEX = /:\d+\)$/;
+/** Source row, only if trailing ')' has been trimmed */
+const SOURCE_ROW_REGEX = /:\d+:\d+$/;
+
+/** Source column, only if trailing ')' has been trimmed */
+const SOURCE_COL_REGEX = /:\d+$/;
+
 const AT_REGEX = /^at /;
 
 /** Find opening '(', which denotes start of filename */
 const FILENAME_START_REGEX = /\(/;
+
+/** Find closing ')', which denotes end of filename */
+const FILENAME_END_REGEX = /\)$/;
 
 /** Match the filename, source position and surrounding parentheses */
 const FILENAME_REGEX = /\(.+:\d+:\d+\)$/;
@@ -30,7 +37,7 @@ function determineFileName(line: string): string {
   const match = FILENAME_REGEX.exec(line);
   if (match) {
     // Slice out the parentheses
-    return match[0].replace(SOURCE_ROW_REGEX, '').slice(1);
+    return match[0].replace(FILENAME_END_REGEX, '').replace(SOURCE_ROW_REGEX, '').slice(1);
   } else {
     // Trace had no function, just remove the 'at' and the and file position
     return line.replace(AT_REGEX, '').replace(SOURCE_ROW_REGEX, '');
@@ -38,6 +45,7 @@ function determineFileName(line: string): string {
 }
 
 function determineSourcePosition(line: string): [number, number] | null {
+  line = line.replace(FILENAME_END_REGEX, '');
   const rowIdx = line.search(SOURCE_ROW_REGEX);
   const colIdx = line.search(SOURCE_COL_REGEX);
   if (rowIdx === -1) {
@@ -45,7 +53,7 @@ function determineSourcePosition(line: string): [number, number] | null {
   }
 
   const row = parseInt(line.slice(rowIdx + 1, colIdx));
-  const col = parseInt(line.slice(colIdx + 1, -1));
+  const col = parseInt(line.slice(colIdx + 1));
   return [row, col];
 }
 
@@ -69,11 +77,41 @@ export function getStackTrace() {
   return parseStackFromError(new Error());
 }
 
+/**
+ * Return whether a file is relevant to the current project
+ *
+ * True if all of:
+ * * File is within the current working directory
+ * * File is not in `node_modules`
+ */
+function pathIsRelevant(file: string) {
+  const cwd = `${process.cwd()}/`;
+  const nodeModules = `${process.cwd()}/node_modules`;
+  return file.startsWith(cwd) && !file.startsWith(nodeModules);
+}
+
+/** Add colors to file path, greying out sections outside of the working directory */
+function colorizePath(file: string): string {
+  const cwd = `${process.cwd()}/`;
+  if (pathIsRelevant(file)) {
+    return `${colors.quietFile(cwd)}${colors.file(file.replace(cwd, ''))}`;
+  } else {
+    return colors.quietFile(file);
+  }
+}
+
 export function displayTrace(trace: StackFrame[]) {
   for (const frame of trace) {
     const fn = colors.func(frame.function ?? '<unknown>');
-    const file = colors.file(frame.file ?? '<unknown>');
-    const pos = frame.pos ? `:${frame.pos[0]}:${frame.pos[1]}` : '';
+    const fileIsRelevant = pathIsRelevant(frame.file);
+    const file = colorizePath(frame.file);
+    let pos = '';
+    if (frame.pos) {
+      pos = `:${frame.pos[0]}:${frame.pos[1]}`;
+      if (!fileIsRelevant) {
+        pos = colors.quietFile(pos);
+      }
+    }
     console.log(`    at ${fn} (${file}${pos})`);
   }
 }
