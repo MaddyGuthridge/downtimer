@@ -2,7 +2,7 @@ import { DeepPartial, TimerCallback, TimerId } from './types';
 import { defaultOptions, DowntimerOptions, mergeDeepPartial } from './options';
 import { nanoid } from 'nanoid/non-secure';
 import { logBeforeExecute, logClearAll, logClearNotFound, logClearOnExit, logClearSuccess, logErrorInExecute, logSchedule } from './log';
-import { getTrace } from './stackTrace';
+import { getStackTrace, StackFrame } from './stackTrace';
 
 /** Internal timer info type */
 export type TimerInfo = {
@@ -16,8 +16,8 @@ export type TimerInfo = {
   externalId: TimerId,
   /** Internal timer ID */
   internalId: ReturnType<typeof setTimeout>,
-  /** The trace */
-  scheduleStackTrace: string,
+  /** Stack trace of the code that scheduled the timer */
+  scheduleStackTrace: StackFrame[],
 }
 
 /** The Downtimer class, which acts as a timer manager */
@@ -71,7 +71,7 @@ export class Downtimer {
   schedule(callback: TimerCallback, ms: number): TimerId {
     const externalId = nanoid() satisfies TimerId;
     const internalId = setTimeout(() => this.#onTimer(externalId), ms);
-    const scheduleStackTrace = getTrace();
+    const scheduleStackTrace = getStackTrace();
 
     const options: TimerInfo = {
       callback,
