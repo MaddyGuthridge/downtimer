@@ -128,7 +128,11 @@ export class Downtimer {
   }
 }
 
-/** Create a new instance of the Downtimer manager. */
+/**
+ * Create a new instance of the Downtimer manager.
+ *
+ * @param options Options for the `Downtimer` object, including settings for logging.
+ */
 export function downtimer(options: DeepPartial<DowntimerOptions> = {}) {
   return new Downtimer(options);
 }

@@ -6,6 +6,7 @@ export type LogMode = 'off' | 'minimal' | 'full';
  * Configuration options for downtimer object.
  */
 export type DowntimerOptions = {
+  /** Configuration for event logging */
   logConfig: {
     /** Log when a new timer is scheduled */
     schedule: LogMode,
@@ -51,6 +52,15 @@ export const defaultOptions: DowntimerOptions = {
   },
 };
 
+/**
+ * Merge a `DeepPartial<T>` object with a collection of defaults of type `T`
+ *
+ * If `T extends object`, then all properties are optional, and any value that is `undefined` in the
+ * `options` will be replaced with the corresponding value in `defaults`.
+ *
+ * Otherwise, the object is considered to be a complete type, and so is only checked for
+ * undefined-ness.
+ */
 export function mergeDeepPartial<T>(defaults: T, options?: DeepPartial<T>): T {
   if (options === undefined || options === null) {
     return defaults;

@@ -23,6 +23,7 @@ const FILENAME_END_REGEX = /\)$/;
 /** Match the filename, source position and surrounding parentheses */
 const FILENAME_REGEX = /\(.+:\d+:\d+\)$/;
 
+/** Determine the function name, given a line in a stack trace */
 function determineFunctionName(line: string): string | null {
   const open = FILENAME_START_REGEX.exec(line);
   if (open === null) {
@@ -32,6 +33,7 @@ function determineFunctionName(line: string): string | null {
   return line.slice(0, open.index - 1).replace(AT_REGEX, '');
 }
 
+/** Determine the file name, given a line in a stack trace */
 function determineFileName(line: string): string {
   // Search for text between first '(' and last ':line:column)'
   const match = FILENAME_REGEX.exec(line);
@@ -44,6 +46,7 @@ function determineFileName(line: string): string {
   }
 }
 
+/** Determine source position, given a line in a stack trace */
 function determineSourcePosition(line: string): [number, number] | null {
   line = line.replace(FILENAME_END_REGEX, '');
   const rowIdx = line.search(SOURCE_ROW_REGEX);
@@ -57,6 +60,7 @@ function determineSourcePosition(line: string): [number, number] | null {
   return [row, col];
 }
 
+/** Given a line in a stack trace, produce a `StackFrame` object */
 function parseStackFrame(line: string): StackFrame {
   line = line.trim();
   return {
@@ -100,6 +104,7 @@ function colorizePath(file: string): string {
   }
 }
 
+/** Given a stack trace, display it to the user in a colorful and friendly manner */
 export function displayTrace(trace: StackFrame[]) {
   for (const frame of trace) {
     const fn = colors.func(frame.function ?? '<unknown>');
@@ -116,6 +121,7 @@ export function displayTrace(trace: StackFrame[]) {
   }
 }
 
+/** Given an Error object, display it to the user in a colorful and friendly manner */
 export function displayError(e: unknown) {
   if (e instanceof Error) {
     const stack = parseStackFromError(e);
