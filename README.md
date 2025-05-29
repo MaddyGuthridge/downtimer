@@ -7,9 +7,10 @@ making them less stressful to work with. It works by implementing the following
 features:
 
 * Graceful handling of exceptions thrown during timers. Errors are logged with
-  debug information, and additional error handlers can optionally be registered
-  as callback functions.
+  helpful debugging information.
 * Warnings are logged for pending timers when the application exits.
+* If debugging timer-related bugs is still difficult, you can configure logging
+  for many other events.
 * Provides a simple interface for clearing all registered timers.
 * Timer IDs can be passed through `JSON.stringify` (since they're just
   strings).
