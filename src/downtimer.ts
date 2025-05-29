@@ -3,6 +3,7 @@ import { defaultOptions, DowntimerOptions, mergeDeepPartial } from './options';
 import { nanoid } from 'nanoid/non-secure';
 import { logBeforeExecute, logClearAll, logClearNotFound, logClearOnExit, logClearSuccess, logErrorInExecute, logSchedule } from './log';
 import { getStackTrace, StackFrame } from './stackTrace';
+import colors, { Colors } from './colors';
 
 /** Internal timer info type */
 export type TimerInfo = {
@@ -26,11 +27,14 @@ export class Downtimer {
   #options: DowntimerOptions;
   /** Internal mapping of timers */
   #timers: Record<TimerId, TimerInfo>;
+  /** Color options */
+  #colors: Colors;
 
   /** Create a new instance of the Downtimer manager. */
   constructor(options: DeepPartial<DowntimerOptions> = {}) {
     this.#options = mergeDeepPartial(defaultOptions, options);
     this.#timers = {};
+    this.#colors = colors(this.#options.useColor);
 
     process.on('exit', code => this.#onExit(code));
   }
@@ -45,7 +49,7 @@ export class Downtimer {
       return;
     }
 
-    logBeforeExecute(this.#options.logConfig.execute.before, timer);
+    logBeforeExecute(this.#options.logConfig.execute.before, timer, this.#colors);
 
     delete this.#timers[timerId];
     try {
@@ -55,6 +59,7 @@ export class Downtimer {
         this.#options.logConfig.execute.onError,
         timer,
         e,
+        this.#colors,
       );
     }
   }
@@ -84,7 +89,7 @@ export class Downtimer {
 
     this.#timers[externalId] = options;
 
-    logSchedule(this.#options.logConfig.schedule, options);
+    logSchedule(this.#options.logConfig.schedule, options, this.#colors);
 
     return externalId;
   }
@@ -100,11 +105,11 @@ export class Downtimer {
     const timer = this.#timers[timerId];
 
     if (!timer) {
-      logClearNotFound(this.#options.logConfig.clear.notFound, timerId);
+      logClearNotFound(this.#options.logConfig.clear.notFound, timerId, this.#colors);
       return;
     }
 
-    logClearSuccess(this.#options.logConfig.clear.success, timer);
+    logClearSuccess(this.#options.logConfig.clear.success, timer, this.#colors);
     clearTimeout(timer.internalId);
     delete this.#timers[timerId];
   }
@@ -113,7 +118,7 @@ export class Downtimer {
    * Cancel all outstanding callback functions.
    */
   clearAll() {
-    logClearAll(this.#options.logConfig.clear.allOutstanding, this.#timers);
+    logClearAll(this.#options.logConfig.clear.allOutstanding, this.#timers, this.#colors);
     for (const [_timerId, timer] of Object.entries(this.#timers)) {
       clearTimeout(timer.internalId);
     }
@@ -122,7 +127,12 @@ export class Downtimer {
 
   #onExit(code: number) {
     if (Object.keys(this.#timers).length) {
-      logClearOnExit(this.#options.logConfig.exitWithOutstandingTimers, this.#timers, code);
+      logClearOnExit(
+        this.#options.logConfig.exitWithOutstandingTimers,
+        this.#timers,
+        code,
+        this.#colors,
+      );
       this.clearAll();
     }
   }

@@ -1,4 +1,4 @@
-import colors from './colors';
+import { type Colors } from './colors';
 
 export type StackFrame = {
   file: string
@@ -95,7 +95,7 @@ function pathIsRelevant(file: string) {
 }
 
 /** Add colors to file path, greying out sections outside of the working directory */
-function colorizePath(file: string): string {
+function colorizePath(file: string, colors: Colors): string {
   const cwd = `${process.cwd()}/`;
   if (pathIsRelevant(file)) {
     return `${colors.quiet(cwd)}${colors.file(file.replace(cwd, ''))}`;
@@ -105,11 +105,11 @@ function colorizePath(file: string): string {
 }
 
 /** Given a stack trace, display it to the user in a colorful and friendly manner */
-export function displayTrace(trace: StackFrame[]) {
+export function displayTrace(trace: StackFrame[], colors: Colors) {
   for (const frame of trace) {
     const fn = colors.func(frame.function ?? '<unknown>');
     const fileIsRelevant = pathIsRelevant(frame.file);
-    const file = colorizePath(frame.file);
+    const file = colorizePath(frame.file, colors);
     let pos = '';
     if (frame.pos) {
       pos = `:${frame.pos[0]}:${frame.pos[1]}`;
@@ -122,11 +122,11 @@ export function displayTrace(trace: StackFrame[]) {
 }
 
 /** Given an Error object, display it to the user in a colorful and friendly manner */
-export function displayError(e: unknown) {
+export function displayError(e: unknown, colors: Colors) {
   if (e instanceof Error) {
     const stack = parseStackFromError(e);
     console.log(`  ${colors.error(e.name)}: ${e.message}`);
-    displayTrace(stack);
+    displayTrace(stack, colors);
   } else {
     console.log(colors.error('  Error object is not of type `Error`. Cannot determine stack trace.'));
     console.log(colors.error(e));

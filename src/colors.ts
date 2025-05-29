@@ -1,35 +1,40 @@
 import { Chalk, supportsColor, type ChalkInstance } from 'chalk';
 
-const noColor = !!process.env.NO_COLOR;
 
-const colorLevel = supportsColor ? supportsColor.level : 0;
+export default function colors(useColor: boolean) {
+  const noColor = !!process.env.NO_COLOR && useColor;
 
-const chalk = new Chalk({ level: noColor ? 0 : colorLevel });
+  const colorLevel = supportsColor ? supportsColor.level : 0;
 
-function handleColor(c: ChalkInstance) {
-  return noColor ? chalk.reset : c;
+  const chalk = new Chalk({ level: noColor ? 0 : colorLevel });
+
+  function handleColor(c: ChalkInstance) {
+    return noColor ? chalk.reset : c;
+  }
+
+  /** Color for function names in log output */
+  const func = handleColor(chalk.cyan);
+  /** Color for type names in log output */
+  const type = handleColor(chalk.red);
+  /**
+   * Color for output that is less relevant to readers (eg parts of stack trace within `node_modules`)
+   */
+  const quiet = handleColor(chalk.gray);
+  /** Color for file names */
+  const file = handleColor(chalk.reset);
+  /** Color for heading text */
+  const heading = handleColor(chalk.magenta);
+  /** Color for error text */
+  const error = handleColor(chalk.red);
+
+  return {
+    func,
+    type,
+    file,
+    quiet,
+    heading,
+    error,
+  } as const;
 }
 
-/** Color for function names in log output */
-const func = handleColor(chalk.cyan);
-/** Color for type names in log output */
-const type = handleColor(chalk.red);
-/**
- * Color for output that is less relevant to readers (eg parts of stack trace within `node_modules`)
- */
-const quiet = handleColor(chalk.gray);
-/** Color for file names */
-const file = handleColor(chalk.reset);
-/** Color for heading text */
-const heading = handleColor(chalk.magenta);
-/** Color for error text */
-const error = handleColor(chalk.red);
-
-export default {
-  func,
-  type,
-  file,
-  quiet,
-  heading,
-  error,
-};
+export type Colors = ReturnType<typeof colors>;

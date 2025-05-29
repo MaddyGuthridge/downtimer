@@ -6,6 +6,11 @@ export type LogMode = 'off' | 'minimal' | 'full';
  * Configuration options for downtimer object.
  */
 export type DowntimerOptions = {
+  /**
+   * Use colours in log output. Defaults to `true`, can also be disabled using `NO_COLOR`
+   * environment variable.
+   */
+  useColor: boolean;
   /** Configuration for event logging */
   logConfig: {
     /** Log when a new timer is scheduled */
@@ -37,6 +42,7 @@ export type DowntimerOptions = {
 
 /** Default options for Downtimer */
 export const defaultOptions: DowntimerOptions = {
+  useColor: true,
   logConfig: {
     schedule: 'off',
     execute: {
