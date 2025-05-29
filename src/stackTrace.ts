@@ -98,9 +98,9 @@ function pathIsRelevant(file: string) {
 function colorizePath(file: string): string {
   const cwd = `${process.cwd()}/`;
   if (pathIsRelevant(file)) {
-    return `${colors.quietFile(cwd)}${colors.file(file.replace(cwd, ''))}`;
+    return `${colors.quiet(cwd)}${colors.file(file.replace(cwd, ''))}`;
   } else {
-    return colors.quietFile(file);
+    return colors.quiet(file);
   }
 }
 
@@ -114,7 +114,7 @@ export function displayTrace(trace: StackFrame[]) {
     if (frame.pos) {
       pos = `:${frame.pos[0]}:${frame.pos[1]}`;
       if (!fileIsRelevant) {
-        pos = colors.quietFile(pos);
+        pos = colors.quiet(pos);
       }
     }
     console.log(`    at ${fn} (${file}${pos})`);

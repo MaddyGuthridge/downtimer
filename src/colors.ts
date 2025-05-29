@@ -29,7 +29,7 @@ export default {
   func,
   type,
   file,
-  quietFile: quiet,
+  quiet,
   heading,
   error,
 };
