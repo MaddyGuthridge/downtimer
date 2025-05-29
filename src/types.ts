@@ -6,7 +6,7 @@ export type DeepPartial<T> = T extends object ? {
 /**
  * A unique ID representing a timer.
  *
- * Under the hood, this is technically a `string`, and so can technically be JSON serialized, but
+ * Under the hood, this is just a `string`, and so can technically be JSON serialized, but
  * saving it to a file doesn't make very much sense, since the timers will all be killed when the
  * process exits.
  */

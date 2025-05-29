@@ -1,19 +1,25 @@
-import chalk from 'chalk';
+import chalk, { type ChalkInstance } from 'chalk';
+
+const noColor = !!process.env.NO_COLOR;
+
+function handleColor(c: ChalkInstance) {
+  return noColor ? chalk.reset : c;
+}
 
 /** Color for function names in log output */
-const func = chalk.cyan;
+const func = handleColor(chalk.cyan);
 /** Color for type names in log output */
-const type = chalk.red;
+const type = handleColor(chalk.red);
 /**
  * Color for output that is less relevant to readers (eg parts of stack trace within `node_modules`)
  */
-const quiet = chalk.gray;
+const quiet = handleColor(chalk.gray);
 /** Color for file names */
-const file = chalk.reset;
+const file = handleColor(chalk.reset);
 /** Color for heading text */
-const heading = chalk.magenta;
+const heading = handleColor(chalk.magenta);
 /** Color for error text */
-const error = chalk.red;
+const error = handleColor(chalk.red);
 
 export default {
   func,
