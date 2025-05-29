@@ -1,6 +1,10 @@
-import chalk, { type ChalkInstance } from 'chalk';
+import { Chalk, supportsColor, type ChalkInstance } from 'chalk';
 
 const noColor = !!process.env.NO_COLOR;
+
+const colorLevel = supportsColor ? supportsColor.level : 0;
+
+const chalk = new Chalk({ level: noColor ? 0 : colorLevel });
 
 function handleColor(c: ChalkInstance) {
   return noColor ? chalk.reset : c;
