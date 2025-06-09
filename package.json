@@ -1,6 +1,6 @@
 {
   "name": "downtimer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Timeouts, but a little more relaxing",
   "keywords": [
     "downtime",
