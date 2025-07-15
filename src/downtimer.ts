@@ -1,6 +1,6 @@
 import { DeepPartial, TimerCallback, TimerId } from './types';
 import { defaultOptions, DowntimerOptions, mergeDeepPartial } from './options';
-import { nanoid } from 'nanoid/non-secure';
+import { v4 as uuid } from 'uuid';
 import { logBeforeExecute, logClearAll, logClearNotFound, logClearOnExit, logClearSuccess, logErrorInExecute, logSchedule } from './log';
 import { getStackTrace, StackFrame } from './stackTrace';
 import colors, { Colors } from './colors';
@@ -74,7 +74,7 @@ export class Downtimer {
    * @returns a timer ID which can be used to cancel the timer.
    */
   schedule(callback: TimerCallback, ms: number): TimerId {
-    const externalId = nanoid() satisfies TimerId;
+    const externalId = uuid() as TimerId;
     const internalId = setTimeout(() => this.#onTimer(externalId), ms);
     const scheduleStackTrace = getStackTrace();
 
