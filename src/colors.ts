@@ -1,31 +1,35 @@
-import { Chalk, supportsColor, type ChalkInstance } from 'chalk';
+import pc from 'picocolors';
+
+/**
+ * Colorizer function, takes a string and applies a color to it.
+ */
+type Colorizer = (s: string) => string;
+
+/** Identity function: applies no color to string */
+const identity: Colorizer = s => s;
 
 
 export default function colors(useColor: boolean) {
-  const noColor = !!process.env.NO_COLOR && useColor;
+  const noColor = !!process.env.NO_COLOR && useColor && (!pc.isColorSupported);
 
-  const colorLevel = supportsColor ? supportsColor.level : 0;
-
-  const chalk = new Chalk({ level: noColor ? 0 : colorLevel });
-
-  function handleColor(c: ChalkInstance) {
-    return noColor ? chalk.reset : c;
+  function handleColor(c: Colorizer): Colorizer {
+    return noColor ? identity : c;
   }
 
   /** Color for function names in log output */
-  const func = handleColor(chalk.cyan);
+  const func = handleColor(pc.cyan);
   /** Color for type names in log output */
-  const type = handleColor(chalk.red);
+  const type = handleColor(pc.red);
   /**
    * Color for output that is less relevant to readers (eg parts of stack trace within `node_modules`)
    */
-  const quiet = handleColor(chalk.gray);
+  const quiet = handleColor(pc.gray);
   /** Color for file names */
-  const file = handleColor(chalk.reset);
+  const file = handleColor(pc.reset);
   /** Color for heading text */
-  const heading = handleColor(chalk.magenta);
+  const heading = handleColor(pc.magenta);
   /** Color for error text */
-  const error = handleColor(chalk.red);
+  const error = handleColor(pc.red);
 
   return {
     func,
