@@ -27,10 +27,10 @@
  * }, 12_000);
  *
  * // Cancel the scheduled timer
- * timers.cancel(t);
+ * timers.clear(t);
  *
  * // Or cancel all scheduled timers
- * timers.cancelAll();
+ * timers.clear();
  *
  * // You can also customise the logging if you're really struggling to debug
  * // timer-related issues
