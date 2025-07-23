@@ -129,6 +129,6 @@ export function displayError(e: unknown, colors: Colors) {
     displayTrace(stack, colors);
   } else {
     console.log(colors.error('  Error object is not of type `Error`. Cannot determine stack trace.'));
-    console.log(colors.error(e));
+    console.log(colors.error(String(e)));
   }
 }
