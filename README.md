@@ -35,10 +35,10 @@ const t = timers.schedule(() => {
 }, 12_000);
 
 // Cancel the scheduled timer
-timers.cancel(t);
+timers.clear(t);
 
 // Or cancel all scheduled timers
-timers.cancelAll();
+timers.clearAll();
 
 // You can also customise the logging if you're really struggling to debug
 // timer-related issues
