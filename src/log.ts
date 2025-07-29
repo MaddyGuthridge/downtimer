@@ -55,7 +55,10 @@ export function logErrorInExecute(mode: LogMode, timer: TimerInfo, execError: un
 
 export function logClearNotFound(mode: LogMode, timerId: TimerId, colors: Colors) {
   if (mode === 'off') return;
-  displayHeading(`Failed to clear timer: '${timerId}' not found`, colors);
+  displayHeading(
+    `Failed to clear timer: '${timerId}' not found (maybe it has already fired?)`,
+    colors,
+  );
   if (mode === 'minimal') return;
   displayTrace(getStackTrace(), colors);
 }
