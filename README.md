@@ -50,14 +50,15 @@ import { downtimer } from 'downtimer';
 let timers = downtimer();
 
 // Schedule a timer (like `setTimeout`)
-const t = timers.schedule(() => {
+const timerId = timers.schedule(() => {
   console.log('12 seconds later');
 }, 12_000);
 
-// Cancel the scheduled timer
-timers.clear(t);
+// Cancel the scheduled timer, by using the timer ID returned by
+// `timers.schedule`
+timers.clear(timerId);
 
-// Or cancel all scheduled timers
+// Or cancel all scheduled timers managed by this downtimer manager.
 timers.clearAll();
 
 // You can also customise the logging if you're really struggling to debug
