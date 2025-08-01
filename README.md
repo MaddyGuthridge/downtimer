@@ -15,6 +15,26 @@ features:
 * Timer IDs can be passed through `JSON.stringify` (since they're just
   strings).
 
+## Pitfalls
+
+* NodeJS Timers aren't millisecond-precise. You may need to add additional
+  buffer time when testing or a slightly-delayed timer may cause your test
+  suite to fail. 10ms is a sensible buffer time for most computers, but
+  slower machines may need a little more than that.
+* If you need times more precise than that, then `downtimer` probably isn't the
+  right library for your needs (and JavaScript probably isn't the right
+  language for your needs).
+* Different `downtimer` manager objects their timers independently. You can't
+  access or cancel timers from one `downtimer` manager by calling
+  `timers.clearAll` on another `downtimer` manager object.
+* Remember that `downtimer.schedule` schedules code to run in the future. It
+  returns immediately, and the rest of your function continues to execute. As
+  such, you probably don't want to use it in your test cases, as your scheduled
+  callback may execute after your test case finishes, causing very confusing
+  bugs. Instead, in your test cases, you may want to pause code execution using
+  a library such as [slync](https://github.com/nktnet1/slync) (short for
+  "sleep sync").
+
 ## Installation
 
 ```sh
