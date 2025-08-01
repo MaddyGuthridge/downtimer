@@ -3,15 +3,15 @@ import { downtimer } from '../src';
 import { optionsNoLogging, sleep } from './util';
 
 /** Maximum acceptable variance in timers is 10ms */
-const MIN_VARIANCE = 10;
+const MIN_VARIANCE = 20;
 
-/** Short timer is 5ms */
-const SHORT = 5;
+/** Short timer is 20ms */
+const SHORT = 20;
 /** After this time, short timer definitely should have fired */
 const AFTER_SHORT = SHORT + MIN_VARIANCE;
 
-/** Long timer is 15ms */
-const LONG = 15;
+/** Long timer is 40ms */
+const LONG = 40;
 /** Before this time, long timer definitely shouldn't have fired */
 const BEFORE_LONG = LONG - MIN_VARIANCE;
 /** Before this time, long timer definitely should have fired */

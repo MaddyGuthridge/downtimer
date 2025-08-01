@@ -19,8 +19,9 @@ features:
 
 * NodeJS Timers aren't millisecond-precise. You may need to add additional
   buffer time when testing or a slightly-delayed timer may cause your test
-  suite to fail. 10ms is a sensible buffer time for most computers, but
-  slower machines may need a little more than that.
+  suite to fail. 20ms is a sensible buffer time for most computers, but
+  slower machines (especially machines running Windows) may need a little more
+  than that.
 * If you need times more precise than that, then `downtimer` probably isn't the
   right library for your needs (and JavaScript probably isn't the right
   language for your needs).
