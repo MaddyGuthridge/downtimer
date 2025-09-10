@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
+    "dedent": "^1.7.0",
     "picocolors": "^1.1.1",
     "uuid": "^11.1.0"
   }

@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { logBeforeExecute, logClearAll, logClearNotFound, logClearOnExit, logClearSuccess, logErrorInExecute, logSchedule } from './log';
 import { getStackTrace, StackFrame } from './stackTrace';
 import colors, { Colors } from './colors';
+import dedent from 'dedent';
 
 /** Internal timer info type */
 export type TimerInfo = {
@@ -143,6 +144,19 @@ export class Downtimer {
       clearTimeout(timer.internalId);
     }
     this.#timers = {};
+  }
+
+  /**
+   * Attempting to convert a Downtimer object to JSON will result in an error. This is because
+   * Downtimer's timer management is not designed to be persistent. You may need a more advanced
+   * system for scheduling events if you require your events to persist through server restarts.
+   */
+  toJSON() {
+    throw Error(
+      dedent`Cannot convert Downtimer object to a JSON string. This is because Downtimer's timer
+      management is not designed to be persistent. You may need a more advanced system for
+      scheduling events if you require your events to persist through server restarts.`
+    );
   }
 
   #onExit(code: number) {
