@@ -25,8 +25,8 @@ features:
 * If you need times more precise than that, then `downtimer` probably isn't the
   right library for your needs (and JavaScript probably isn't the right
   language for your needs).
-* Different `downtimer` manager objects their timers independently. You can't
-  access or cancel timers from one `downtimer` manager by calling
+* Different `downtimer` manager objects store their timers independently. You 
+  can't access or cancel timers from one `downtimer` manager by calling
   `timers.clearAll` on another `downtimer` manager object.
 * Remember that `downtimer.schedule` schedules code to run in the future. It
   returns immediately, and the rest of your function continues to execute. As
@@ -34,7 +34,7 @@ features:
   callback may execute after your test case finishes, causing very confusing
   bugs. Instead, in your test cases, you may want to pause code execution using
   a library such as [slync](https://github.com/nktnet1/slync) (short for
-  "sleep sync").
+  "sleep sync") if your timers are running on a separate process to your tests.
 
 ## Installation
 
