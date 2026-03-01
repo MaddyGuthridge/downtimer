@@ -48,7 +48,7 @@
     "@types/node": "^24.6.1",
     "@types/uuid": "^11.0.0",
     "@vitest/coverage-v8": "^4.0.16",
-    "eslint": "^9.25.1",
+    "eslint": "^10.0.2",
     "execa": "^9.5.3",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
