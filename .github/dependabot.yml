@@ -11,6 +11,7 @@ updates:
           - "eslint"
           - "eslint-plugin-*"
           - "@types/eslint"
+          - "@eslint/*"
           - "typescript-eslint"
           - "@stylistic/eslint-plugin"
           - "@tanstack/eslint-plugin-query"
