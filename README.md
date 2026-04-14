@@ -1,6 +1,6 @@
 # Downtimer
 
-Timeouts, but a little more relaxing.
+*Timeouts, but a little more relaxing.*
 
 Downtimer is a simple management system for timers created using `setTimeout`,
 making them less stressful to work with. It works by implementing the following
@@ -32,9 +32,7 @@ features:
   returns immediately, and the rest of your function continues to execute. As
   such, you probably don't want to use it in your test cases, as your scheduled
   callback may execute after your test case finishes, causing very confusing
-  bugs. Instead, in your test cases, you may want to pause code execution using
-  a library such as [slync](https://github.com/nktnet1/slync) (short for
-  "sleep sync") if your timers are running on a separate process to your tests.
+  bugs.
 
 ## Installation
 
